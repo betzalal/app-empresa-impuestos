@@ -1,0 +1,323 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id              String   @id @default(uuid())
+  name            String
+  nit             String   @unique
+  logoUrl         String?
+  description     String?  // "A que se dedica la empresa"
+  industry        String?
+  teamSize        String?
+  primaryGoal     String?
+  acquisitionSource String?
+  
+  // Integrations
+  gmailAccessToken  String?
+  gmailRefreshToken String?
+
+  users           User[]
+  
+  // Relations for Multi-tenancy
+  sales           Sale[]
+  purchases       Purchase[]
+  taxParameters   TaxParameter[]
+  paymentProofs   PaymentProof[]
+  employees       Employee[]
+  payrolls        Payroll[]
+  jobPositions    JobPosition[]
+  candidates      Candidate[]
+  orgNodes        OrgNode[]
+  documents       CompanyDocument[]
+  projects        Project[]
+  memories        CompanyMemory[]
+
+  createdAt       DateTime @default(now())
+}
+
+model User {
+  id       String @id @default(uuid())
+  username String @unique
+  password String
+  
+  // Profile
+  fullName String?
+  email    String?
+  role     String? // Owner, Admin, etc.
+  
+  // Relations
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+  
+  createdAt DateTime @default(now())
+  nit       String? // Deprecated in favor of Company.nit, but keeping for compatibility if needed
+}
+
+model Sale {
+  id              String   @id @default(uuid())
+  date            DateTime
+  amount          Float
+  clientName      String
+  itemDescription String
+  quantity        Int
+  paymentType     String // e.g., Contado, Credito
+  paymentMethod   String // e.g., Efectivo, QR, Transferencia
+  buyerNit        String? // Added: NIT/CI del comprador
+  
+  companyId       String?
+  company         Company? @relation(fields: [companyId], references: [id])
+
+  createdAt       DateTime @default(now())
+}
+
+model Purchase {
+  id           String   @id @default(uuid())
+  date         DateTime
+  amount       Float
+  description  String
+  nitProvider  String?
+  importBaseCF Float    // Importe Base Credito Fiscal (Row S)
+  
+  companyId    String?
+  company      Company? @relation(fields: [companyId], references: [id])
+
+  createdAt    DateTime @default(now())
+}
+
+model TaxParameter {
+  id                String @id @default(uuid())
+  month             Int
+  year              Int
+  ufvStart          Float
+  ufvEnd            Float
+  previousBalanceCF Float // Saldo anterior Credito Fiscal
+  previousBalanceIUE Float // Saldo anterior IUE
+  
+  // Added: Ending balances to persist for next month
+  balanceCFEnd      Float? @default(0) // Saldo final Credito Fiscal
+  balanceIUEEnd     Float? @default(0) // Saldo final IUE
+  
+  companyId         String?
+  company           Company? @relation(fields: [companyId], references: [id])
+
+  createdAt         DateTime @default(now())
+
+  @@unique([month, year, companyId]) // Unique per company per month
+}
+
+model PaymentProof {
+  id        String   @id @default(uuid())
+  month     Int
+  year      Int
+  taxType   String   // 'IVA' or 'IT'
+  filePath  String
+  fileName  String
+  fileType  String
+  isLocked  Boolean  @default(false)
+  
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  
+  @@unique([month, year, taxType, companyId]) // Unique per company
+}
+
+model Employee {
+  id              String    @id @default(uuid())
+  firstName       String
+  lastName        String
+  documentId      String    // CI/NIT
+  birthDate       DateTime
+  email           String?
+  phone           String?
+  address         String?
+  image           String?   // URL to photo
+  
+  // Job Info
+  jobTitle        String
+  jobPosition     JobPosition? @relation(fields: [jobTitle], references: [title])
+  department      String
+  hiredDate       DateTime
+  baseSalary      Float
+  store           String?   // Store assignment
+  monthlyHours    Float     @default(176) // Hours per month (Standard: ~176)
+  status          String    @default("Active") // Active, Archived
+  
+  // Relations
+  payrolls        Payroll[]
+  documents       CompanyDocument[] 
+  assignments     StageAssignment[]
+
+  companyId       String?
+  company         Company? @relation(fields: [companyId], references: [id])
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Payroll {
+  id              String    @id @default(uuid())
+  month           Int
+  year            Int
+  baseSalary      Float
+  bonuses         Float     @default(0)
+  
+  // Deductions / Benefits
+  socialSecurity  Float     @default(0.19) // 19% default
+  healthInsurance Float     @default(0.10) // 10% default
+  laborMinistry   Float     @default(70)   // 70 Bs default
+  
+  otherDeductions Float     @default(0)
+  otherReason     String?
+  
+  employeeId      String
+  employee        Employee  @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  
+  // Payment Proofs (URLs)
+  proofSalary       String?
+  proofSS           String? // Social Security
+  proofHealth       String? // Health Insurance
+  proofLabor        String? // Labor Ministry
+  
+  companyId       String?
+  company         Company? @relation(fields: [companyId], references: [id])
+
+  createdAt       DateTime @default(now())
+}
+
+model JobPosition {
+  id              String    @id @default(uuid())
+  title           String    @unique
+  description     String?
+  responsibilities String?
+  
+  employees       Employee[]
+  
+  companyId       String?
+  company         Company? @relation(fields: [companyId], references: [id])
+
+  createdAt       DateTime @default(now())
+}
+
+model Candidate {
+  id              String    @id @default(uuid())
+  name            String
+  appliedPosition String
+  status          String    // Recibido, Entrevista, Contratado, Rechazado
+  cvUrl           String?
+  
+  // Expanded Details
+  description     String?
+  previousJobs    String?
+  yearsExperience Int?
+  proposedRole    String?
+  expectedSalary  Float?
+  
+  // Stage Specific
+  interviewDate   DateTime?
+  offerDetails    String?
+  
+  companyId       String?
+  company         Company? @relation(fields: [companyId], references: [id])
+
+  createdAt       DateTime @default(now())
+}
+
+model OrgNode {
+  id              String    @id @default(uuid())
+  name            String
+  role            String
+  parentId        String?
+  parent          OrgNode?  @relation("OrgTree", fields: [parentId], references: [id])
+  children        OrgNode[] @relation("OrgTree")
+  
+  companyId       String?
+  company         Company? @relation(fields: [companyId], references: [id])
+}
+
+model CompanyDocument {
+  id              String    @id @default(uuid())
+  type            String    // Flujograma, Manual, Politica
+  title           String
+  url             String
+  
+  employeeId      String?
+  employee        Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  companyId       String?
+  company         Company? @relation(fields: [companyId], references: [id])
+
+  createdAt       DateTime @default(now())
+}
+
+model Project {
+  id             String    @id @default(uuid())
+  name           String
+  type           String    // e.g., Construction, Event
+  startDate      DateTime
+  durationMonths Int
+  status         String    @default("Planning") // Planning, Active, Completed
+
+  resources      ProjectResource[]
+  stages         ProjectStage[]
+
+  companyId      String?
+  company        Company? @relation(fields: [companyId], references: [id])
+
+  createdAt      DateTime @default(now())
+}
+
+model ProjectResource {
+  id             String    @id @default(uuid())
+  roleString     String    // e.g., "Gerente", "Obrero"
+  count          Int       // Number of people required
+
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model ProjectStage {
+  id             String    @id @default(uuid())
+  name           String
+  startDate      DateTime
+  endDate        DateTime
+
+  projectId      String?   // Optional, can be a standalone event
+  project        Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  assignments    StageAssignment[]
+}
+
+model StageAssignment {
+  id             String    @id @default(uuid())
+  
+  assignedHours  Float     // Hours assigned exclusively to this stage
+  manualCost     Float?    // Optional override for projected cost
+  extraExpenses  Float     @default(0) // Viaticos, materials, etc.
+
+  stageId        String
+  stage          ProjectStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  employeeId     String
+  employee       Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+}
+
+model CompanyMemory {
+  id        String   @id @default(uuid())
+  content   String
+  date      DateTime @default(now()) // The specific date this memory refers to (usually creation date)
+  
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
