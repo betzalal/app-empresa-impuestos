@@ -1,0 +1,49 @@
+/* Minimal overrides for react-orgchart if needed */
+.orgchart-container {
+    height: 100%;
+    width: 100%;
+    background-color: transparent !important;
+    border: none !important;
+}
+
+.orgchart {
+    background: none !important;
+}
+
+.orgchart .node {
+    width: 180px;
+    border: 1px solid #e2e8f0; /* slate-200 */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.orgchart .node .title {
+    background-color: #f97316; /* orange-500 */
+    color: white;
+    border-radius: 6px 6px 0 0;
+    font-size: 14px;
+    font-weight: 600;
+    height: auto;
+    padding: 4px 8px;
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.orgchart .node .content {
+    width: 100%;
+    height: auto;
+    font-size: 12px;
+    line-height: 16px;
+    border: 1px solid transparent;
+    text-align: center;
+    background-color: transparent;
+    color: #475569; /* slate-600 */
+    padding: 8px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    border-radius: 0 0 6px 6px;
+}

@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* Default variables (likely light mode or overridden by data-theme) */
+        --bg-primary: #ffffff;
+        --bg-secondary: #f3f4f6;
+        --text-primary: #111827;
+        --text-secondary: #6b7280;
+        --border-color: #e5e7eb;
+        --glass-bg: rgba(255, 255, 255, 0.8);
+        --glass-border: rgba(255, 255, 255, 0.6);
+        --sidebar-bg: #FFFFFF;
+        --sidebar-border: #f3f4f6;
+    }
+
+    [data-theme='dark'] {
+        /* Requested Dark Blue Theme */
+        --bg-primary: #0F1025;
+        /* Deep Blue */
+        --bg-secondary: #1A1C35;
+        /* Lighter Blue */
+        --text-primary: #E2E8F0;
+        /* Slate 200 */
+        --text-secondary: #94A3B8;
+        /* Slate 400 */
+        --border-color: #1E293B;
+        /* Slate 800 */
+        --glass-bg: rgba(15, 16, 37, 0.85);
+        --glass-border: rgba(30, 41, 59, 0.5);
+        --sidebar-bg: #0A0B1E;
+        /* Even darker blue for sidebar */
+        --sidebar-border: #1E293B;
+    }
+
+    body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+}
+
+@layer components {
+    .glass-panel {
+        background-color: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        @apply shadow-lg;
+    }
+
+    .glass-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        @apply rounded-2xl shadow-sm hover:shadow-md transition-all duration-200;
+    }
+
+    .input-field {
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        @apply block w-full rounded-xl focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-3 px-4 shadow-sm placeholder-gray-400;
+    }
+}
