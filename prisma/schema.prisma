@@ -21,6 +21,8 @@ model Company {
   // Integrations
   gmailAccessToken  String?
   gmailRefreshToken String?
+  gmailUser         String?
+  gmailAppPassword  String?
 
   users           User[]
   
@@ -37,6 +39,8 @@ model Company {
   documents       CompanyDocument[]
   projects        Project[]
   memories        CompanyMemory[]
+  expenseStores   ExpenseStore[]
+  iueData         IueData[]
 
   createdAt       DateTime @default(now())
 }
@@ -311,6 +315,7 @@ model StageAssignment {
   createdAt      DateTime @default(now())
 }
 
+
 model CompanyMemory {
   id        String   @id @default(uuid())
   content   String
@@ -320,4 +325,108 @@ model CompanyMemory {
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+}
+
+model ExpenseStore {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+
+  expenses    OperatingExpense[]
+
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model OperatingExpense {
+  id          String   @id @default(uuid())
+  category    String   // Alquileres, Servicios Basicos, Mantenimiento, Publicidad, Seguros
+  amount      Float
+  description String?
+  
+  month       Int
+  year        Int
+  
+  proofUrl    String?  // File path/URL for the receipt
+
+  storeId     String
+  store       ExpenseStore @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([storeId, year, month])
+}
+
+model IueData {
+  id                String   @id @default(uuid())
+  year              Int
+  
+  // Box 1: Inventarios
+  initialInventory  Float    @default(0)
+  finalInventory    Float    @default(0)
+  
+  // Box 2: Gastos no monetarios A
+  depreciation      Float    @default(0)
+  otherNonMonetaryA Float    @default(0)
+  
+  // Box 3: Gastos no deducibles
+  fines             Float    @default(0)
+  withoutInvoice    Float    @default(0)
+  personalExpenses  Float    @default(0)
+  
+  // Box 4: Gastos no monetarios B (Custom)
+  nonMonetaryDetail   String?
+  nonMonetaryAmount   Float    @default(0)
+  
+  // Box 5: Base imponible / Ajustes
+  taxAdjustmentDetail String?
+  taxAdjustmentAmount Float    @default(0)
+
+  // Asset Valuation for auto-depreciation / amortization
+  computerValue       Float    @default(0)
+  furnitureValue      Float    @default(0)
+  appValue            Float    @default(0)
+  
+  // Lists as JSON strings
+  itemsBox2         String? // Dynamic list for Gastos No Monetarios
+  itemsBox3         String? // Dynamic list for Gastos No Deducibles
+  itemsBox4         String? // Dynamic list for Ajustes
+  itemsBox5         String? // Dynamic list for Rentas No Gravadas
+  softwareItems     String? // Dynamic list for software purchases (Amort. 20%)
+  
+  companyId         String
+  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([year, companyId])
+}
+
+model ReceivedSurvey {
+  id              String   @id @default(uuid())
+  sourceInstance  String?  // URL or ID of the sender app
+  companyName     String
+  nit             String
+  adminUsername   String?
+  description     String?
+  
+  // Survey data
+  role            String?
+  industry        String?
+  priority        String?
+  teamSize        String?
+  source          String?
+  
+  // User data
+  fullName        String?
+  email           String?
+  
+  rawData         String?  // Full JSON string for backup
+  
+  createdAt       DateTime @default(now())
 }
