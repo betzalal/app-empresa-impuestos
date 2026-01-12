@@ -29,13 +29,13 @@ export function ResultsMatrix({ data }: { data: MonthlyData[] }) {
                     </thead>
                     <tbody className="divide-y divide-[var(--border-color)]">
                         {data.map((row) => (
-                            <tr key={row.month} className="hover:bg-white/5 transition-colors">
+                            <tr key={row.month} className="hover:bg-[var(--text-primary)]/5 transition-colors">
                                 <td className="px-4 py-3 font-medium text-[var(--text-primary)]">{months[row.month - 1]}</td>
                                 <td className="px-4 py-3 text-[var(--text-secondary)]">{row.sales.toLocaleString()}</td>
                                 <td className="px-4 py-3 text-[var(--text-secondary)]">{row.purchases.toLocaleString()}</td>
                                 <td className="px-4 py-3">
                                     <div className="flex items-center space-x-2">
-                                        <div className="flex-1 h-1.5 bg-gray-700/30 rounded-full max-w-[80px]">
+                                        <div className="flex-1 h-1.5 bg-[var(--border-color)] rounded-full max-w-[80px]">
                                             <div
                                                 className={`h-1.5 rounded-full ${row.sales > row.purchases ? 'bg-green-500' : 'bg-red-500'}`}
                                                 style={{ width: `${Math.min((Math.abs(row.sales - row.purchases) / (row.sales || 1)) * 100, 100)}%` }}

@@ -6,18 +6,25 @@ interface DashboardContextType {
     isMobileMenuOpen: boolean
     toggleMobileMenu: () => void
     closeMobileMenu: () => void
+    isSidebarCollapsed: boolean
+    toggleSidebar: () => void
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined)
 
 export function DashboardProvider({ children }: { children: ReactNode }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
     const toggleMobileMenu = () => setIsMobileMenuOpen(prev => !prev)
     const closeMobileMenu = () => setIsMobileMenuOpen(false)
+    const toggleSidebar = () => setIsSidebarCollapsed(prev => !prev)
 
     return (
-        <DashboardContext.Provider value={{ isMobileMenuOpen, toggleMobileMenu, closeMobileMenu }}>
+        <DashboardContext.Provider value={{
+            isMobileMenuOpen, toggleMobileMenu, closeMobileMenu,
+            isSidebarCollapsed, toggleSidebar
+        }}>
             {children}
         </DashboardContext.Provider>
     )

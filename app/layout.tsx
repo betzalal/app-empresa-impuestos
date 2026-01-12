@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Sawalife Tax App",
-  description: "Tax management application",
+  title: "BASE - Gestión Operativa",
+  description: "La base operativa de la empresa",
   icons: {
     icon: '/favicon.ico',
   },

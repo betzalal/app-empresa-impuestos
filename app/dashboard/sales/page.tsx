@@ -178,7 +178,7 @@ export default function SalesPage() {
                         accept=".xlsx, .xls"
                         onChange={handleFileUpload}
                         disabled={uploading}
-                        className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 disabled:opacity-50"
+                        className="text-sm text-[var(--text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-600/10 file:text-indigo-600 hover:file:bg-indigo-600/20 disabled:opacity-50"
                     />
                 </div>
             </div>
@@ -256,8 +256,8 @@ export default function SalesPage() {
                         </div>
 
                         {/* Total Display (Dynamic) */}
-                        {searchTerm && (
-                            <div className="bg-indigo-50 border border-indigo-200 text-indigo-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center shadow-sm animate-in fade-in zoom-in duration-300">
+                        {(searchTerm || filterDate !== 'ALL') && (
+                            <div className="bg-indigo-600/10 border border-indigo-600/20 text-indigo-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center shadow-sm animate-in fade-in zoom-in duration-300">
                                 <span className="mr-2">Total Filtrado:</span>
                                 {filteredData.reduce((sum, item) => sum + item.amount, 0).toLocaleString('es-BO', { style: 'currency', currency: 'BOB' })}
                             </div>
@@ -265,9 +265,9 @@ export default function SalesPage() {
 
                         {/* Date Filter */}
                         <div className="flex items-center gap-2">
-                            <Filter className="h-4 w-4 text-gray-400" />
+                            <Filter className="h-4 w-4 text-[var(--text-secondary)]" />
                             <select
-                                className="border border-gray-300 rounded-lg text-sm py-2 pl-2 pr-8 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] rounded-lg text-sm py-2 pl-2 pr-8 focus:ring-indigo-500 focus:border-indigo-500"
                                 value={filterDate === 'ALL' ? 'ALL' : `${filterDate.month}-${filterDate.year}`}
                                 onChange={(e) => {
                                     if (e.target.value === 'ALL') setFilterDate('ALL')
@@ -287,12 +287,12 @@ export default function SalesPage() {
                         </div>
                     </div>
                 </div>
-                <div className="border-t border-gray-200">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                <div className="border-t border-[var(--border-color)] overflow-x-auto">
+                    <table className="min-w-full divide-y divide-[var(--border-color)]">
+                        <thead className="bg-[var(--text-primary)]/5">
                             <tr>
                                 <th
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                    className="px-6 py-3 text-left text-xs font-black text-[var(--text-secondary)] uppercase tracking-wider cursor-pointer hover:bg-[var(--text-primary)]/10"
                                     onClick={() => requestSort('date')}
                                 >
                                     <div className="flex items-center gap-1">
@@ -301,7 +301,7 @@ export default function SalesPage() {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                    className="px-6 py-3 text-left text-xs font-black text-[var(--text-secondary)] uppercase tracking-wider cursor-pointer hover:bg-[var(--text-primary)]/10"
                                     onClick={() => requestSort('clientName')}
                                 >
                                     <div className="flex items-center gap-1">
@@ -310,7 +310,7 @@ export default function SalesPage() {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                    className="px-6 py-3 text-left text-xs font-black text-[var(--text-secondary)] uppercase tracking-wider cursor-pointer hover:bg-[var(--text-primary)]/10"
                                     onClick={() => requestSort('buyerNit')}
                                 >
                                     <div className="flex items-center gap-1">
@@ -319,7 +319,7 @@ export default function SalesPage() {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                    className="px-6 py-3 text-left text-xs font-black text-[var(--text-secondary)] uppercase tracking-wider cursor-pointer hover:bg-[var(--text-primary)]/10"
                                     onClick={() => requestSort('itemDescription')}
                                 >
                                     <div className="flex items-center gap-1">
@@ -328,7 +328,7 @@ export default function SalesPage() {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                    className="px-6 py-3 text-left text-xs font-black text-[var(--text-secondary)] uppercase tracking-wider cursor-pointer hover:bg-[var(--text-primary)]/10"
                                     onClick={() => requestSort('amount')}
                                 >
                                     <div className="flex items-center gap-1">
@@ -336,21 +336,21 @@ export default function SalesPage() {
                                         {sortConfig?.key === 'amount' && (sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
                                     </div>
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                <th className="px-6 py-3 text-left text-xs font-black text-[var(--text-secondary)] uppercase tracking-wider">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-transparent divide-y divide-[var(--border-color)]">
                             {loading ? (
                                 <tr><td colSpan={6} className="px-6 py-4 text-center">Cargando...</td></tr>
                             ) : filteredData.length === 0 ? (
                                 <tr><td colSpan={6} className="px-6 py-4 text-center text-gray-500">No se encontraron resultados</td></tr>
                             ) : filteredData.map((sale) => (
                                 <tr key={sale.id}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(sale.date).toLocaleDateString()}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{sale.clientName}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{sale.buyerNit || '-'}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{sale.itemDescription} ({sale.quantity})</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Bs {sale.amount.toFixed(2)}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">{new Date(sale.date).toLocaleDateString()}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-primary)] font-semibold">{sale.clientName}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">{sale.buyerNit || '-'}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">{sale.itemDescription} ({sale.quantity})</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-black text-[var(--text-primary)]">Bs {sale.amount.toFixed(2)}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <button onClick={() => handleDelete(sale.id)} className="text-red-600 hover:text-red-900">Eliminar</button>
                                     </td>

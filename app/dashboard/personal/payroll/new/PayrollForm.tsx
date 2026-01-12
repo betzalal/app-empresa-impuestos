@@ -91,6 +91,7 @@ export default function PayrollForm({ employees, initialData }: PayrollFormProps
                                 {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
                                     <option key={m} value={m}>{new Date(0, m - 1).toLocaleString('es-ES', { month: 'long' })}</option>
                                 ))}
+                                <option value="13" className="font-bold text-orange-500">★ Aguinaldo (Payment 13)</option>
                             </select>
                         </div>
                         <div className="space-y-2">

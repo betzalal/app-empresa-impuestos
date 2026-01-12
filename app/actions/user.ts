@@ -5,7 +5,7 @@ import { cookies } from 'next/headers'
 
 export async function getCurrentUser() {
     const cookieStore = cookies()
-    const userId = cookieStore.get('sawalife_session')?.value
+    const userId = cookieStore.get('base_session')?.value
 
     if (!userId) {
         return null
@@ -21,7 +21,9 @@ export async function getCurrentUser() {
                 companyId: true,
                 company: {
                     select: {
-                        name: true
+                        id: true,
+                        name: true,
+                        logoUrl: true
                     }
                 }
             }
@@ -30,5 +32,25 @@ export async function getCurrentUser() {
     } catch (e) {
         console.error('Error fetching user:', e)
         return null
+    }
+}
+
+export async function updateUserName(newName: string) {
+    const cookieStore = cookies()
+    const userId = cookieStore.get('base_session')?.value
+
+    if (!userId) {
+        throw new Error('Unauthorized')
+    }
+
+    try {
+        await prisma.user.update({
+            where: { id: userId },
+            data: { username: newName }
+        })
+        return { success: true }
+    } catch (e) {
+        console.error('Error updating username:', e)
+        return { success: false, error: 'Error al actualizar el nombre' }
     }
 }

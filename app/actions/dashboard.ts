@@ -98,44 +98,6 @@ export async function getTopPurchases(year?: number) {
 /**
  * Returns Accumulated IUE for the selected year.
  */
-export async function getIUEProjected(year?: number) {
-    const targetYear = year || new Date().getFullYear()
-
-    // Use UTC boundaries to ensure full year coverage
-    const startDate = new Date(Date.UTC(targetYear, 0, 1, 0, 0, 0))
-    const endDate = new Date(Date.UTC(targetYear + 1, 0, 1, 0, 0, 0))
-
-    const session = await verifySession()
-
-    const sales = await prisma.sale.aggregate({
-        _sum: { amount: true },
-        where: {
-            companyId: session.companyId,
-            date: { gte: startDate, lt: endDate }
-        }
-    })
-    const purchases = await prisma.purchase.aggregate({
-        _sum: { importBaseCF: true }, // Expenses (Use Base CF to match tax logic)
-        where: {
-            companyId: session.companyId,
-            date: { gte: startDate, lt: endDate }
-        }
-    })
-
-    const totalSales = sales._sum.amount || 0
-    // Use importBaseCF as the deductible expense to align with monthly "Gastos Deducibles"
-    const totalPurchases = purchases._sum.importBaseCF || 0
-    const netProfit = Math.max(0, totalSales - totalPurchases)
-    const iue = netProfit * 0.25
-
-    return {
-        year: targetYear,
-        totalSales,
-        totalPurchases,
-        netProfit,
-        iue
-    }
-}
 
 /**
  * Returns annual analytics for charts (Jan-Dec) for the specified year.

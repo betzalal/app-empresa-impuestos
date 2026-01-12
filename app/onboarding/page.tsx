@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Building2, User, Target, BarChart, Users, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react'
+import { completeOnboarding } from '@/app/actions/onboarding'
+import { logout } from '@/app/actions/auth'
 
 export default function OnboardingPage() {
     const router = useRouter()
@@ -62,11 +64,9 @@ export default function OnboardingPage() {
     const handleSubmit = async () => {
         setIsLoading(true)
         try {
-            const { completeOnboarding } = await import('@/app/actions/onboarding')
             const result = await completeOnboarding(formData)
 
             if (result.success) {
-                const { logout } = await import('@/app/actions/auth')
                 await logout()
             } else {
                 alert(result.error || 'Error al guardar datos. Intente nuevamente.')
@@ -78,6 +78,8 @@ export default function OnboardingPage() {
             setIsLoading(false)
         }
     }
+
+
 
     return (
         <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 md:p-6 font-sans">
@@ -207,11 +209,13 @@ export default function OnboardingPage() {
                             <div className="flex justify-between pt-8 border-t border-slate-800 mt-8">
                                 <button onClick={prevStep} className="btn-secondary"><ArrowLeft size={18} className="mr-2" /> Atrás</button>
                                 <button onClick={handleSubmit} disabled={isLoading || !formData.fullName || !formData.email} className="btn-primary w-48">
-                                    {isLoading ? 'Guardando...' : 'Finalizar y Comenzar'}
+                                    {isLoading ? 'Guardando...' : 'Finalizar y Guardar'}
                                 </button>
                             </div>
                         </div>
                     )}
+
+
                 </div>
             </div>
 

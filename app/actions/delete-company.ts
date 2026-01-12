@@ -13,6 +13,10 @@ export async function deleteCompanyAction(formData: FormData, targetCompanyId?: 
         // If no targetCompanyId is provided, we default to the current company (self-deletion)
         const companyId = targetCompanyId || currentCompanyId
 
+        if (!companyId) {
+            return { success: false, message: 'No se pudo identificar la empresa a eliminar.' }
+        }
+
         const username = formData.get('authUsername') as string
         const password = formData.get('authPassword') as string
 
@@ -59,7 +63,7 @@ export async function deleteCompanyAction(formData: FormData, targetCompanyId?: 
 
         // 3. Cleanup Session ONLY IF deleting self
         if (companyId === currentCompanyId) {
-            cookies().delete('sawalife_session')
+            cookies().delete('base_session')
             return { success: true, redirect: '/' }
         }
 

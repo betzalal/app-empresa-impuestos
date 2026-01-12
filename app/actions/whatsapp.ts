@@ -1,22 +1,58 @@
 'use server'
 
-import { getClient, getStatus } from '@/app/lib/whatsappClient'
+import { getWhatsAppStatus, getWhatsAppClient, disconnectWhatsApp, getWhatsAppChats, getWhatsAppMessages, sendWhatsAppMessage } from '@/app/lib/whatsapp';
 
-export async function initWhatsApp() {
+export async function getWhatsAppConnectionStatus() {
     try {
-        getClient() // Trigger init
-        return { success: true }
-    } catch (error) {
-        console.error("Failed to init WhatsApp", error)
-        return { success: false, error: 'Failed to initialize' }
+        // Ensure client is initialized if someone checks status
+        getWhatsAppClient();
+        return { success: true, ...getWhatsAppStatus() };
+    } catch (error: any) {
+        return { success: false, error: error.message };
     }
 }
 
-export async function getWhatsAppState() {
-    const status = getStatus()
-    return {
-        isConnected: status.isReady,
-        qr: status.qrCode,
-        isLoading: status.isLoading
+export async function initializeWhatsAppAction() {
+    try {
+        const client = getWhatsAppClient();
+        return { success: true, status: 'INITIALIZING' };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function logoutWhatsAppAction() {
+    try {
+        await disconnectWhatsApp();
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function getWhatsAppChatsAction() {
+    try {
+        const chats = await getWhatsAppChats();
+        return { success: true, chats };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function getWhatsAppMessagesAction(chatId: string) {
+    try {
+        const messages = await getWhatsAppMessages(chatId);
+        return { success: true, messages };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function sendWhatsAppMessageAction(chatId: string, message: string) {
+    try {
+        const result = await sendWhatsAppMessage(chatId, message);
+        return { success: true, message: result };
+    } catch (error: any) {
+        return { success: false, error: error.message };
     }
 }

@@ -17,6 +17,9 @@ export async function getMonthlyTotals(month: number, year: number) {
         const endDate = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0))
 
         const session = await verifySession()
+        if (!session.companyId) {
+            return { success: false, salesTotal: 0, purchasesTotal: 0, purchasesGross: 0 }
+        }
 
         const sales = await prisma.sale.aggregate({
             _sum: {
@@ -64,6 +67,9 @@ export async function getMonthlyTotals(month: number, year: number) {
 export async function getTaxParameters(month: number, year: number) {
     try {
         const session = await verifySession()
+        if (!session.companyId) {
+            return { success: false, data: null }
+        }
 
         // Prisma automatically names the compound unique index arg based on fields
         // Since we changed it to @@unique([month, year, companyId]), the key is likely month_year_companyId
@@ -93,6 +99,9 @@ export async function getPreviousMonthEndingBalances(currentMonth: number, curre
         }
 
         const session = await verifySession()
+        if (!session.companyId) {
+            return { success: false, balanceCFEnd: 0, balanceIUEEnd: 0 }
+        }
 
         const params = await prisma.taxParameter.findUnique({
             where: {
@@ -130,6 +139,9 @@ export async function saveTaxParameters(data: {
 }) {
     try {
         const session = await verifySession()
+        if (!session.companyId) {
+            return { success: false, message: 'La sesión no está vinculada a una empresa.' }
+        }
 
         await prisma.taxParameter.upsert({
             where: {

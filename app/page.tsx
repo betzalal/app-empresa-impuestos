@@ -50,26 +50,19 @@ export default function LoginPage() {
 
         {/* Content */}
         <div className="relative z-10 text-center px-6 max-w-4xl animate-in fade-in zoom-in-95 duration-1000">
-          {/* Logo Placeholder - If company exists, show company logo. If not, show Sawalife. */}
-          <div className="mx-auto mb-8 w-32 h-32 relative">
-            {/* We use a SVG Water Drop for Sawalife branding matching the uploaded image concept */}
-            <svg viewBox="0 0 100 100" className="w-full h-full fill-blue-500 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-              <path d="M50 0 C50 0 10 40 10 65 C10 85 30 100 50 100 C70 100 90 85 90 65 C90 40 50 0 50 0 Z M50 90 C35 90 20 80 20 65 C20 50 45 20 50 15 C55 20 80 50 80 65 C80 80 65 90 50 90 Z" opacity="0.9" />
-              <circle cx="35" cy="65" r="5" fill="white" opacity="0.6" />
-              <circle cx="65" cy="55" r="8" fill="white" opacity="0.4" />
-              <circle cx="50" cy="75" r="4" fill="white" opacity="0.5" />
-            </svg>
-          </div>
-
-          <h1 className="text-6xl md:text-7xl font-black tracking-tighter text-white mb-6 drop-shadow-2xl">
-            SAWALIFE
+          <h1 className="text-7xl md:text-8xl font-black tracking-tighter text-white mb-2 drop-shadow-2xl">
+            BASE
           </h1>
+          <h2 className="text-2xl md:text-3xl font-bold text-blue-400 mb-8 tracking-tight italic">
+            "La base operativa de la empresa"
+          </h2>
 
-          <p className="text-xl md:text-2xl text-blue-100 font-light leading-relaxed max-w-3xl mx-auto drop-shadow-md">
+          <p className="text-lg md:text-xl text-blue-100/80 font-light leading-relaxed max-w-3xl mx-auto drop-shadow-md">
             "La plataforma integral para el control de proyectos y finanzas corporativas. Desde la gestión de personal hasta el análisis de gastos detallados, simplificamos toda tu operación operativa y tributaria en una sola fuente de verdad"
           </p>
 
-          <div className="mt-16 text-slate-400 text-sm animate-bounce">
+          <div className="mt-16 text-slate-400 text-sm animate-bounce flex flex-col items-center gap-2">
+            <ArrowRight className="text-blue-500" />
             Click para ingresar
           </div>
         </div>
@@ -87,16 +80,11 @@ export default function LoginPage() {
         <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
 
         <div className="relative z-20 flex flex-col items-center text-center text-white">
-          <div className="w-24 h-24 mb-6 text-blue-500">
-            <svg viewBox="0 0 100 100" className="w-full h-full fill-current">
-              <path d="M50 0 C50 0 10 40 10 65 C10 85 30 100 50 100 C70 100 90 85 90 65 C90 40 50 0 50 0 Z" />
-            </svg>
-          </div>
-          <h1 className="text-4xl font-black tracking-tight mb-4 text-white">
-            SAWALIFE
+          <h1 className="text-6xl font-black tracking-tighter mb-4 text-white">
+            BASE
           </h1>
-          <p className="text-slate-400 max-w-md">
-            Gestión inteligente. Resultados reales.
+          <p className="text-blue-400 font-bold uppercase tracking-[0.3em] text-xs">
+            Gestión Operativa Integral
           </p>
         </div>
       </div>
@@ -113,8 +101,8 @@ export default function LoginPage() {
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-10">
-            <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-300">
-              SAWALIFE
+            <h2 className="text-4xl font-black text-white px-6 py-2 border-b-2 border-blue-500 inline-block">
+              BASE
             </h2>
           </div>
 
@@ -189,7 +177,7 @@ export default function LoginPage() {
           </div>
 
           <p className="mt-8 text-center text-xs text-slate-500">
-            © 2026 Sawalife Tax System. Todos los derechos reservados.
+            © 2026 BASE. Todos los derechos reservados.
           </p>
         </div>
       </div>

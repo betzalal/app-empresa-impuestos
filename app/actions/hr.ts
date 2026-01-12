@@ -218,6 +218,20 @@ export async function createPayroll(formData: FormData) {
     const otherDeductions = parseFloat(formData.get('otherDeductions') as string) || 0
     const otherReason = formData.get('otherReason') as string
 
+    // DUPLICATE CHECK
+    const existingPayroll = await prisma.payroll.findFirst({
+        where: {
+            employeeId,
+            month,
+            year,
+            companyId: session.companyId
+        }
+    })
+
+    if (existingPayroll) {
+        throw new Error(`Payroll already exists for this employee for ${month}/${year}`)
+    }
+
     await prisma.payroll.create({
         data: {
             employeeId,

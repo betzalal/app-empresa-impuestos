@@ -1,6 +1,7 @@
 import { getCurrentUser } from '@/app/actions/user'
 import { getCompanyDataVolume } from '@/app/actions/company'
 import { CompanyFloor1 } from '@/app/components/company/CompanyFloor1'
+import { redirect } from 'next/navigation'
 import dynamic from 'next/dynamic'
 
 // Dynamic imports for heavy sections
@@ -14,6 +15,12 @@ const CompanyFloor3 = dynamic(() => import('@/app/components/company/CompanyFloo
 
 export default async function CompanyPage() {
     const user = await getCurrentUser()
+
+    if (!user) {
+        redirect('/')
+        return null
+    }
+
     const dataVolume = await getCompanyDataVolume()
     const companyName = user?.company?.name || user?.username || "Mi Empresa"
 

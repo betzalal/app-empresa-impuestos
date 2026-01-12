@@ -18,13 +18,13 @@ interface Props {
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-gray-900/90 text-white p-3 rounded-lg border border-gray-700 shadow-xl backdrop-blur-md text-xs">
-                <p className="font-bold mb-2 text-gray-300">{label}</p>
+            <div className="bg-[var(--tooltip-bg)] text-[var(--text-primary)] p-3 rounded-xl border border-[var(--border-color)] shadow-xl backdrop-blur-md text-xs">
+                <p className="font-bold mb-2 text-[var(--text-secondary)] tracking-widest uppercase text-[10px]">{label}</p>
                 {payload.map((entry: any) => (
                     <div key={entry.name} className="flex items-center gap-2 mb-1">
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }}></div>
-                        <span className="capitalize text-gray-400">{entry.name}:</span>
-                        <span className="font-mono font-medium">Bs {entry.value?.toLocaleString()}</span>
+                        <span className="capitalize text-[var(--text-secondary)]">{entry.name}:</span>
+                        <span className="font-bold">Bs {entry.value?.toLocaleString()}</span>
                     </div>
                 ))}
             </div>
@@ -60,18 +60,18 @@ export default function TaxTrendChart({ data }: Props) {
                                 <stop offset="95%" stopColor="#EAB308" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                         <XAxis
                             dataKey="name"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: '#9CA3AF', fontSize: 12 }}
+                            tick={{ fill: 'var(--text-secondary)', fontSize: 11, fontWeight: 700 }}
                             dy={10}
                         />
                         <YAxis
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: '#9CA3AF', fontSize: 12 }}
+                            tick={{ fill: 'var(--text-secondary)', fontSize: 11, fontWeight: 700 }}
                             tickFormatter={(value) => `Bs ${value}`}
                         />
                         <Tooltip content={<CustomTooltip />} />

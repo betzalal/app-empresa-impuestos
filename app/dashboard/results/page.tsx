@@ -112,15 +112,15 @@ export default function ResultsPage() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-semibold text-gray-900">Resultados de Impuestos</h1>
-                {statusMessage && <span className="text-sm text-gray-500">{statusMessage}</span>}
+                <h1 className="text-2xl font-semibold text-white">Resultados de Impuestos</h1>
+                {statusMessage && <span className="text-sm text-slate-300">{statusMessage}</span>}
             </div>
 
             <div className="bg-white shadow sm:rounded-lg p-6">
                 <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                     <div className="sm:col-span-2">
                         <label className="block text-sm font-medium text-gray-700">Mes</label>
-                        <select value={month} onChange={e => setMonth(Number(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm">
+                        <select value={month} onChange={e => setMonth(Number(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm text-gray-900">
                             {[...Array(12)].map((_, i) => (
                                 <option key={i} value={i + 1}>{i + 1}</option>
                             ))}
@@ -128,28 +128,28 @@ export default function ResultsPage() {
                     </div>
                     <div className="sm:col-span-2">
                         <label className="block text-sm font-medium text-gray-700">Año</label>
-                        <input type="number" value={year} onChange={e => setYear(Number(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm" />
+                        <input type="number" value={year} onChange={e => setYear(Number(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm text-gray-900" />
                     </div>
 
                     <div className="sm:col-span-6 border-t pt-4 mt-2"><h3 className="font-medium text-gray-900">Variables UFV y Saldos</h3></div>
 
                     <div className="sm:col-span-3">
                         <label className="block text-sm font-medium text-gray-700">UFV Inicial (Ultimo día hábil mes anterior)</label>
-                        <input type="number" step="0.00001" value={ufvStart} onChange={e => setUfvStart(Number(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm" />
+                        <input type="number" step="0.00001" value={ufvStart} onChange={e => setUfvStart(Number(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm text-gray-900" />
                     </div>
                     <div className="sm:col-span-3">
                         <label className="block text-sm font-medium text-gray-700">UFV Final (Ultimo día hábil mes actual)</label>
-                        <input type="number" step="0.00001" value={ufvEnd} onChange={e => setUfvEnd(Number(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm" />
+                        <input type="number" step="0.00001" value={ufvEnd} onChange={e => setUfvEnd(Number(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm text-gray-900" />
                     </div>
 
                     <div className="sm:col-span-3">
                         <label className="block text-sm font-medium text-gray-700">Saldo Crédito Fiscal Anterior</label>
-                        <input type="number" step="0.01" value={prevBalanceCF} onChange={e => setPrevBalanceCF(Number(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm" />
+                        <input type="number" step="0.01" value={prevBalanceCF} onChange={e => setPrevBalanceCF(Number(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm text-gray-900" />
                     </div>
 
                     <div className="sm:col-span-3">
                         <label className="block text-sm font-medium text-gray-700">Saldo IUE Disponible</label>
-                        <input type="number" step="0.01" value={prevBalanceIUE} onChange={e => setPrevBalanceIUE(Number(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm" />
+                        <input type="number" step="0.01" value={prevBalanceIUE} onChange={e => setPrevBalanceIUE(Number(e.target.value))} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 sm:text-sm text-gray-900" />
                     </div>
 
                     <div className="sm:col-span-6 pt-4 flex space-x-3">
@@ -171,7 +171,7 @@ export default function ResultsPage() {
                     {/* IVA CARD */}
                     <div className="bg-white shadow sm:rounded-lg p-6 border-l-4 border-indigo-500">
                         <h3 className="text-lg font-bold text-gray-900 mb-4">Impuesto al Valor Agregado (IVA)</h3>
-                        <div className="space-y-2 text-sm">
+                        <div className="space-y-2 text-sm text-gray-700">
                             <div className="flex justify-between"><span>Ventas Mes:</span> <span className="font-semibold">{totals.sales.toFixed(2)}</span></div>
                             <div className="flex justify-between"><span>Compras Mes (Base CF):</span> <span className="font-semibold">{totals.purchases.toFixed(2)}</span></div>
                             <div className="border-t my-2"></div>
@@ -188,7 +188,7 @@ export default function ResultsPage() {
                     {/* IT CARD */}
                     <div className="bg-white shadow sm:rounded-lg p-6 border-l-4 border-yellow-500">
                         <h3 className="text-lg font-bold text-gray-900 mb-4">Impuesto a las Transacciones (IT)</h3>
-                        <div className="space-y-2 text-sm">
+                        <div className="space-y-2 text-sm text-gray-700">
                             <div className="flex justify-between"><span>Ingresos Brutos:</span> <span className="font-semibold">{totals.sales.toFixed(2)}</span></div>
                             <div className="border-t my-2"></div>
                             <div className="flex justify-between"><span>IT Determinado (3%):</span> <span className="text-red-600">{result.it.determined}</span></div>

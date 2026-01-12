@@ -153,7 +153,10 @@ function PayrollGroupRow({ employee, latestPayroll, latestContributions, periodS
     // Formatter
     const currency = (val: number) => `Bs ${val.toLocaleString(undefined, { minimumFractionDigits: 2 })} `
     const dateStr = (date: Date) => date ? new Date(date).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }) : '-'
-    const monthStr = (m: number, y: number) => new Date(y, m - 1).toLocaleString('es-ES', { month: 'long', year: 'numeric' })
+    const monthStr = (m: number, y: number) => {
+        if (m === 13) return `Aguinaldo ${y}`
+        return new Date(y, m - 1).toLocaleString('es-ES', { month: 'long', year: 'numeric' })
+    }
     const fullDate = (date: Date) => date ? new Date(date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'
 
     const handleDeletePayroll = (id: string, e: React.MouseEvent) => {

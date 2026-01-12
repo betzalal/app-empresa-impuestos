@@ -19,7 +19,7 @@ export async function login(formData: FormData) {
         const newUser = await prisma.user.create({
             data: { username: 'admin', password: hashedPassword }
         })
-        cookies().set('sawalife_session', newUser.id, { httpOnly: true })
+        cookies().set('base_session', newUser.id, { httpOnly: true })
         redirect('/onboarding')
         return
     }
@@ -37,18 +37,18 @@ export async function login(formData: FormData) {
     // Check for Onboarding Condition
     // If username is admin/admin (and we just verified it), AND user has no companyId?
     if (user.username === 'admin' && !(user as any).companyId) {
-        cookies().set('sawalife_session', user.id, { httpOnly: true })
+        cookies().set('base_session', user.id, { httpOnly: true })
         redirect('/onboarding')
         return
     }
 
     // Set session
-    cookies().set('sawalife_session', user.id, { httpOnly: true })
+    cookies().set('base_session', user.id, { httpOnly: true })
     redirect('/dashboard/company')
 }
 
 export async function logout() {
-    cookies().delete('sawalife_session')
+    cookies().delete('base_session')
     redirect('/')
 }
 

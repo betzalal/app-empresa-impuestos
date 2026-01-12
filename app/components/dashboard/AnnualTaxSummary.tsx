@@ -30,7 +30,7 @@ export default function AnnualTaxSummary({ data2025, data2026 }: Props) {
                 <h3 className="text-[var(--text-secondary)] text-sm font-medium uppercase tracking-wider relative z-10">Impuestos 2025 (Pagado/Deuda)</h3>
                 <div className="mt-2 flex items-end justify-between relative z-10">
                     <span className="text-3xl font-bold text-[var(--text-primary)]">Bs {total2025.toLocaleString('es-BO', { minimumFractionDigits: 2 })}</span>
-                    <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full">Acumulado</span>
+                    <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded-full border border-indigo-500/20">Acumulado</span>
                 </div>
             </div>
 
@@ -39,7 +39,7 @@ export default function AnnualTaxSummary({ data2025, data2026 }: Props) {
                 <h3 className="text-[var(--text-secondary)] text-sm font-medium uppercase tracking-wider relative z-10">Impuestos 2026 (Proyectado)</h3>
                 <div className="mt-2 flex items-end justify-between relative z-10">
                     <span className="text-3xl font-bold text-[var(--text-primary)]">Bs {total2026.toLocaleString('es-BO', { minimumFractionDigits: 2 })}</span>
-                    <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">En curso</span>
+                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full border border-emerald-500/20">En curso</span>
                 </div>
             </div>
         </div>

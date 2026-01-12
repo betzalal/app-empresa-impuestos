@@ -33,7 +33,7 @@ export function AppGuide() {
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold">Guía Rápida</h3>
-                                    <p className="text-white/80 text-sm">Sawalife Taxes</p>
+                                    <p className="text-white/80 text-sm">Sistema de Impuestos</p>
                                 </div>
                             </div>
                             <button onClick={() => setIsOpen(false)} className="text-white/70 hover:text-white">

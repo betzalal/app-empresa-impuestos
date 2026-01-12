@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { X, User, Lock, Activity, Save, AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { updateUserName } from '@/app/actions/user'
 
 // We will fetch these from a server action later, for now we mock or pass as props
 interface UserProfileModalProps {
@@ -25,6 +26,7 @@ export function UserProfileModal({ isOpen, onClose, user }: UserProfileModalProp
 
     // Form States
     const [formData, setFormData] = useState({
+        name: user?.name || '',
         email: user?.email || '',
         phone: user?.phone || '',
         currentPassword: '',
@@ -38,10 +40,21 @@ export function UserProfileModal({ isOpen, onClose, user }: UserProfileModalProp
         setIsLoading(true)
         setMessage(null)
 
-        // TODO: Call Server Action
-        await new Promise(resolve => setTimeout(resolve, 1000)) // Mock
+        if (formData.name === user?.name) {
+            setMessage({ type: 'success', text: 'No hay cambios que guardar' })
+            setIsLoading(false)
+            return
+        }
 
-        setMessage({ type: 'success', text: 'Detalles actualizados correctamente' })
+        const result = await updateUserName(formData.name)
+
+        if (result.success) {
+            setMessage({ type: 'success', text: 'Nombre actualizado correctamente' })
+            // Refresh to update header etc.
+            window.location.reload()
+        } else {
+            setMessage({ type: 'error', text: result.error || 'Error al actualizar' })
+        }
         setIsLoading(false)
     }
 
@@ -126,11 +139,10 @@ export function UserProfileModal({ isOpen, onClose, user }: UserProfileModalProp
                                     <label className="block text-sm font-medium text-slate-400 mb-1">Nombre Completo</label>
                                     <input
                                         type="text"
-                                        value={user?.name}
-                                        disabled
-                                        className="w-full p-2 rounded-lg bg-slate-900/50 border border-slate-700 text-slate-500 cursor-not-allowed"
+                                        value={formData.name}
+                                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full p-2 rounded-lg bg-transparent border border-slate-700 text-white focus:border-blue-500 outline-none"
                                     />
-                                    <p className="text-xs text-slate-600 mt-1">Contacte al administrador para cambiar su nombre.</p>
                                 </div>
 
                                 <div>
@@ -138,9 +150,10 @@ export function UserProfileModal({ isOpen, onClose, user }: UserProfileModalProp
                                     <input
                                         type="email"
                                         value={formData.email}
-                                        onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full p-2 rounded-lg bg-transparent border border-slate-700 text-white focus:border-blue-500 outline-none"
+                                        disabled
+                                        className="w-full p-2 rounded-lg bg-slate-900/50 border border-slate-700 text-slate-500 cursor-not-allowed"
                                     />
+                                    <p className="text-[10px] text-slate-600 mt-1">Este campo no puede ser editado. Contacte a soporte si necesita cambiarlo.</p>
                                 </div>
 
                                 <div>
@@ -148,9 +161,8 @@ export function UserProfileModal({ isOpen, onClose, user }: UserProfileModalProp
                                     <input
                                         type="tel"
                                         value={formData.phone}
-                                        onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                                        placeholder="+591 ..."
-                                        className="w-full p-2 rounded-lg bg-transparent border border-slate-700 text-white focus:border-blue-500 outline-none"
+                                        disabled
+                                        className="w-full p-2 rounded-lg bg-slate-900/50 border border-slate-700 text-slate-500 cursor-not-allowed"
                                     />
                                 </div>
                             </div>

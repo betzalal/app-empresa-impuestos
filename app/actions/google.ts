@@ -1,99 +1,137 @@
 'use server'
 
-import { google } from 'googleapis'
-import { getCurrentUser } from './user'
-import prisma from '@/lib/prisma'
-import { redirect } from 'next/navigation'
+import nodemailer from 'nodemailer';
+import { ImapFlow } from 'imapflow';
+import prisma from '@/lib/prisma';
+import { getCurrentUser } from './user';
 
-// Configuration
-// In a real app, use process.env. For this specific request, use the provided values.
-const CLIENT_ID = '1041432400486-0o2go4o8t8uenvm6rbv8b3fn06bpbjpv.apps.googleusercontent.com'
-const CLIENT_SECRET = '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'
-const REDIRECT_URI = 'http://localhost:3000/api/google/callback'
+/**
+ * Helper to get Gmail credentials for the current user's company
+ */
+async function getGmailCredentials() {
+    const user = await getCurrentUser();
+    if (!user || !user.companyId) return null;
 
-const oauth2Client = new google.auth.OAuth2(
-    CLIENT_ID,
-    CLIENT_SECRET,
-    REDIRECT_URI
-)
-
-export async function getAuthUrl() {
-    const scopes = [
-        'https://www.googleapis.com/auth/gmail.readonly',
-        'https://www.googleapis.com/auth/userinfo.email' // To identify the connected account
-    ]
-
-    return oauth2Client.generateAuthUrl({
-        access_type: 'offline', // Critical for refresh token
-        scope: scopes,
-        prompt: 'consent' // Force prompts to ensure we get refresh token
-    })
-}
-
-export async function getGmailMessages() {
-    const user = await getCurrentUser()
-    if (!user || (!user.companyId && !user.nit)) return { error: "No user/company found" }
-
-    const companyId = user.companyId || (await prisma.company.findUnique({ where: { nit: user.nit || '' } }))?.id
-    if (!companyId) return { error: "Company not linked" }
-
-    // Fetch tokens
     const company = await prisma.company.findUnique({
-        where: { id: companyId },
-        select: { gmailAccessToken: true, gmailRefreshToken: true }
-    })
+        where: { id: user.companyId },
+        select: { gmailUser: true, gmailAppPassword: true }
+    });
 
-    if (!company || !company.gmailAccessToken) {
-        return { error: "Gmail not connected", notConnected: true }
-    }
+    if (!company || !company.gmailUser || !company.gmailAppPassword) return null;
 
-    // Set credentials
-    oauth2Client.setCredentials({
-        access_token: company.gmailAccessToken,
-        refresh_token: company.gmailRefreshToken || undefined
-    })
+    return {
+        user: company.gmailUser,
+        pass: company.gmailAppPassword
+    };
+}
 
+/**
+ * Action to save Gmail credentials
+ */
+export async function saveGmailCredentialsAction(gmailUser: string, gmailAppPassword: string) {
     try {
-        const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
+        const user = await getCurrentUser();
+        if (!user || !user.companyId) throw new Error("No se encontró la empresa del usuario");
 
-        // List messages
-        const response = await gmail.users.messages.list({
-            userId: 'me',
-            maxResults: 10
-        })
-
-        const messages = response.data.messages || []
-
-        // Fetch details for each message
-        const detailedMessages = await Promise.all(messages.map(async (msg) => {
-            const details = await gmail.users.messages.get({
-                userId: 'me',
-                id: msg.id!
-            })
-
-            const headers = details.data.payload?.headers
-            const subject = headers?.find(h => h.name === 'Subject')?.value || '(No Subject)'
-            const from = headers?.find(h => h.name === 'From')?.value || '(Unknown)'
-            const date = headers?.find(h => h.name === 'Date')?.value || ''
-
-            return {
-                id: msg.id,
-                snippet: details.data.snippet,
-                subject,
-                from,
-                date
+        await prisma.company.update({
+            where: { id: user.companyId },
+            data: {
+                gmailUser,
+                gmailAppPassword
             }
-        }))
+        });
 
-        return { success: true, messages: detailedMessages }
-
+        return { success: true };
     } catch (error: any) {
-        console.error("Gmail API Error:", error)
-        // Check if token expired and refresh failed (googleapis handles refresh automatically if refresh_token is set, 
-        // but if it fails we might need to re-auth)
-        if (error.code === 401) {
-            return { error: "Token expired", notConnected: true }
-        }
-        return { error: "Failed to fetch emails" }
+        console.error('Error saving Gmail credentials:', error);
+        return { success: false, error: error.message };
     }
 }
+
+/**
+ * Action to send an email
+ */
+export async function sendGmailAction(to: string, subject: string, text: string) {
+    try {
+        const credentials = await getGmailCredentials();
+        if (!credentials) return { success: false, error: "Credenciales de Gmail no configuradas" };
+
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: credentials
+        });
+
+        const mailOptions = {
+            from: credentials.user,
+            to: to,
+            subject: subject,
+            text: text
+        };
+
+        const result = await transporter.sendMail(mailOptions);
+        return { success: true, messageId: result.messageId };
+    } catch (error: any) {
+        console.error('Error al enviar Gmail:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Action to fetch recent emails using IMAP
+ */
+export async function getGmailMessagesAction() {
+    try {
+        const credentials = await getGmailCredentials();
+        if (!credentials) return { success: false, error: "Credenciales de Gmail no configuradas", notConfigured: true };
+
+        const client = new ImapFlow({
+            host: 'imap.gmail.com',
+            port: 993,
+            secure: true,
+            auth: credentials,
+            logger: false
+        });
+
+        await client.connect();
+
+        let lock = await client.getMailboxLock('INBOX');
+        const messages = [];
+
+        try {
+            const status = await client.status('INBOX', { messages: true });
+            const total = status.messages || 0;
+            const start = Math.max(1, total - 9);
+            const end = total;
+
+            if (total > 0) {
+                // Correct usage for fetch in imapflow
+                for await (let message of client.fetch(`${start}:${end}`, { envelope: true })) {
+                    if (message.envelope) {
+                        messages.push({
+                            id: message.uid,
+                            subject: message.envelope.subject || '(Sin Asunto)',
+                            from: message.envelope.from?.[0]?.address || 'Desconocido',
+                            date: message.envelope.date,
+                            snippet: ''
+                        });
+                    }
+                }
+            }
+        } finally {
+            lock.release();
+        }
+
+        await client.logout();
+
+        // Return reversed to show newest first
+        return { success: true, messages: messages.reverse() };
+    } catch (error: any) {
+        console.error('IMAP Error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Keeping a placeholder for fetching if needed, but the user requested nodemailer focus
+// Nodemailer is primarily for sending. For receiving without complex OAuth,
+// usually IMAP would be used, but since the user provided SMTP/Transporter info,
+// we will focus on the sending functionality for the widget as "my own WhatsApp-web.js but for Gmail"

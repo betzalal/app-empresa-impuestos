@@ -1,11 +1,9 @@
-import { getDashboardSummary, getIUEProjected, getLastPayments, getMonthlyMatrix, getTopPurchases, getAnnualAnalytics } from '@/app/actions/dashboard'
+import { getDashboardSummary, getLastPayments, getMonthlyMatrix, getTopPurchases, getAnnualAnalytics } from '@/app/actions/dashboard'
 import { getCurrentUser } from '@/app/actions/user'
 import { PaymentHistory } from '@/app/components/dashboard/PaymentHistory'
-import { IUECard } from '@/app/components/dashboard/IUECard'
 import { TopPurchases } from '@/app/components/dashboard/TopPurchases'
 import { ResultsMatrix } from '@/app/components/dashboard/ResultsMatrix'
 import { CalendarWidget } from '@/app/components/dashboard/CalendarWidget'
-import { AppGuide } from '@/app/components/dashboard/AppGuide'
 import { DashboardFilter } from '@/app/components/dashboard/DashboardFilter'
 import AnnualTaxSummary from '@/app/components/dashboard/AnnualTaxSummary'
 import OperationsChart from '@/app/components/dashboard/OperationsChart'
@@ -27,7 +25,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
     // OPTIMIZATION: Fetch all independent data in parallel
     const [
         payments,
-        iueData,
         matrix,
         topPurchases,
         analytics2025,
@@ -35,7 +32,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
         chartData
     ] = await Promise.all([
         getLastPayments(),
-        getIUEProjected(displayYear),
         getMonthlyMatrix(displayYear),
         getTopPurchases(displayYear),
         getAnnualAnalytics(2025),
@@ -154,7 +150,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
 
                 {/* Left Column: Payments & IUE */}
                 <div className="space-y-8">
-                    <IUECard data={iueData} />
                     <PaymentHistory payments={payments} />
                 </div>
 
@@ -176,19 +171,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
                 {/* Calendar Widget (Phase 3) */}
                 <div className="h-full">
                     <CalendarWidget nit={user?.nit || undefined} />
-                </div>
-            </div>
-
-            {/* Guide Teaser (Phase 4) */}
-            <div className="glass-card p-6 bg-gradient-to-r from-gray-900 to-gray-800 text-white">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h3 className="font-bold text-lg">Centro de Aprendizaje</h3>
-                        <p className="text-gray-400 text-sm">Aprende a usar todas las funciones de Sawalife Taxes.</p>
-                    </div>
-                    <div className="w-auto">
-                        <AppGuide />
-                    </div>
                 </div>
             </div>
 

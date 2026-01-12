@@ -39,38 +39,38 @@ export default async function PersonalDashboard({
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                    <h1 className="text-2xl font-bold text-[var(--text-primary)]">
                         <span className="text-orange-500 mr-2">{employees.length}</span>
                         Employees
                     </h1>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1">Manage your team members and their details.</p>
+                    <p className="text-[var(--text-secondary)] mt-1 text-sm">Manage your team members and their details.</p>
                 </div>
 
                 <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <button className="flex items-center justify-center px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium">
-                        <Filter className="w-5 h-5 mr-0 sm:mr-2" />
+                    <button className="flex items-center justify-center px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-primary)] transition-colors font-medium border border-[var(--border-color)] text-sm">
+                        <Filter className="w-4 h-4 mr-0 sm:mr-2" />
                         <span className="hidden sm:inline">Filter</span>
                     </button>
                     <Link
                         href="/dashboard/personal/new"
-                        className="flex items-center justify-center px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors font-medium shadow-sm shadow-orange-500/20"
+                        className="flex items-center justify-center px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors font-medium shadow-sm shadow-orange-500/20 text-sm"
                     >
-                        <Plus className="w-5 h-5 mr-2" />
+                        <Plus className="w-4 h-4 mr-2" />
                         Add New
                     </Link>
                 </div>
             </div>
 
             {/* Search Bar */}
-            <div className="w-full bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="w-full bg-[var(--bg-card)] p-1.5 rounded-xl border border-[var(--border-color)] shadow-sm">
                 <form action={searchAction} className="relative">
-                    <Search className="absolute left-4 top-3.5 h-5 w-5 text-slate-400" />
+                    <Search className="absolute left-4 top-2.5 h-4 w-4 text-[var(--text-secondary)] opacity-50" />
                     <input
                         name="q"
                         defaultValue={query}
                         type="text"
-                        placeholder="Type to search an employee by name, job or department..."
-                        className="w-full pl-12 pr-4 py-3 bg-transparent text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-0"
+                        placeholder="Search employee by name, job or department..."
+                        className="w-full pl-10 pr-4 py-2 bg-transparent text-[var(--text-primary)] placeholder-[var(--text-secondary)]/50 focus:outline-none focus:ring-0 text-sm"
                     />
                 </form>
             </div>

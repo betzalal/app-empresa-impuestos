@@ -2,15 +2,20 @@
 
 import prisma from '@/lib/prisma'
 import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
 import bcrypt from 'bcrypt'
+import { sendToCentralServer } from '@/app/lib/sync'
 
-export async function completeOnboarding(formData: any) {
+export type OnboardingResponse = {
+    success: boolean
+    error?: string
+}
+
+export async function completeOnboarding(formData: any): Promise<OnboardingResponse> {
     try {
-        const sessionUserId = cookies().get('sawalife_session')?.value
+        const sessionUserId = cookies().get('base_session')?.value
         if (!sessionUserId) throw new Error('No session found')
 
-        return await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async (tx) => {
             // 1. Create Company
             const company = await tx.company.create({
                 data: {
@@ -26,10 +31,8 @@ export async function completeOnboarding(formData: any) {
             })
 
             // 2. Update Current User (Admin)
-            // Hash new password
             const hashedPassword = await bcrypt.hash(formData.adminPassword, 10)
 
-            // Find current user and update details
             await tx.user.update({
                 where: { id: sessionUserId },
                 data: {
@@ -66,14 +69,18 @@ export async function completeOnboarding(formData: any) {
                     }
                 })
             }
-
-            return { success: true }
         })
+
+        // 4. Async Sync to Central Server (Does not block the user response)
+        sendToCentralServer(formData).catch(err => {
+            console.error('[Sync] Catch-all error in background sync:', err)
+        })
+
+        return { success: true }
 
     } catch (error: any) {
         console.error("Onboarding Error Full Details:", JSON.stringify(error, null, 2))
 
-        // Handle Unique Constraint Violations
         if (error.code === 'P2002') {
             const target = error.meta?.target
             if (Array.isArray(target)) {
@@ -85,7 +92,4 @@ export async function completeOnboarding(formData: any) {
 
         return { success: false, error: `Error: ${error.message || 'Error al guardar datos'}` }
     }
-
-    // Perform redirect outside try/catch
-    return { success: true }
 }

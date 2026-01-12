@@ -78,6 +78,10 @@ export async function uploadPaymentProof(formData: FormData): Promise<ActionResp
         await writeFile(filePath, buffer)
 
         // 5. Update/Create DB record
+        if (!session.companyId) {
+            return { success: false, message: 'La sesión no está vinculada a una empresa.' }
+        }
+
         const savedProof = await prisma.paymentProof.upsert({
             where: {
                 month_year_taxType_companyId: {
@@ -92,8 +96,6 @@ export async function uploadPaymentProof(formData: FormData): Promise<ActionResp
                 year,
                 taxType,
                 filePath: publicPath,
-                fileName: file.name,
-                fileType: file.type,
                 fileName: file.name,
                 fileType: file.type,
                 isLocked: false,

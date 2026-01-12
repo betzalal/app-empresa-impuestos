@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { X, UserPlus, Moon, Sun, Clock, Globe, Phone, Mail } from 'lucide-react'
 import { useTheme } from '../ThemeProvider'
 
-export function SettingsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function SettingsModal({ isOpen, onClose, companyName }: { isOpen: boolean; onClose: () => void; companyName?: string }) {
     if (!isOpen) return null
 
     const { theme, setTheme } = useTheme()
@@ -36,12 +36,14 @@ export function SettingsModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
     }, [])
 
     useEffect(() => {
-        if (activeTab === 'danger' && isOpen) {
+        if (isOpen) {
             import('@/app/actions/delete-company').then(mod => {
-                mod.getCompaniesAdminAction().then(data => setCompanies(data))
+                mod.getCompaniesAdminAction().then(data => {
+                    setCompanies(data)
+                })
             })
         }
-    }, [activeTab, isOpen])
+    }, [isOpen])
 
     // Format helpers
     const formatDate = (date: Date) => {
@@ -139,8 +141,7 @@ export function SettingsModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                                     <div>
                                         <label className="block text-sm font-medium text-slate-300 mb-1">Asignar a Empresa (NIT)</label>
                                         <select className="input-field">
-                                            <option>Sawalife S.R.L. (Principal)</option>
-                                            {/* Logic for additional companies would go here */}
+                                            <option>{companyName || 'Cargando...'} (Actual)</option>
                                         </select>
                                     </div>
                                     <button type="submit" className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors">

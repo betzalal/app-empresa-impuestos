@@ -13,7 +13,7 @@ export function TopPurchases({ purchases }: { purchases: Purchase[] }) {
             <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Mayores Gastos (12 Meses)</h3>
             <div className="space-y-5">
                 {purchases.length === 0 ? (
-                    <p className="text-gray-400 text-sm">No hay registros de compras.</p>
+                    <p className="text-[var(--text-secondary)] text-sm italic">No hay registros de compras.</p>
                 ) : (
                     purchases.map((p) => (
                         <div key={p.id}>

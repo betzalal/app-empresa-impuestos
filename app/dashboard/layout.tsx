@@ -2,12 +2,20 @@ import { ReactNode } from 'react'
 import { Sidebar } from '@/app/components/Sidebar'
 import { Header } from '@/app/components/Header'
 import { getCompanyInfo } from '@/app/actions/company'
+import { MainContent } from '@/app/components/dashboard/MainContent'
 import { DashboardProvider } from '@/app/components/dashboard/DashboardContext'
+import { redirect } from 'next/navigation'
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
     const company = await getCompanyInfo()
-    const companyName = company?.name || "SAWALIFE"
-    const logoUrl = company?.logoUrl || "/images/logo.jpg"
+
+    if (!company) {
+        redirect('/')
+        return null
+    }
+
+    const companyName = company?.name || "Mi Empresa"
+    const logoUrl = company?.logoUrl || null
 
     return (
         <DashboardProvider>
@@ -15,11 +23,9 @@ export default async function DashboardLayout({ children }: { children: ReactNod
                 <Sidebar companyName={companyName} logoUrl={logoUrl} />
                 <Header />
 
-                <main className="pt-24 pb-8 px-4 sm:px-8 md:ml-64 transition-all duration-200">
-                    <div className="max-w-7xl mx-auto">
-                        {children}
-                    </div>
-                </main>
+                <MainContent>
+                    {children}
+                </MainContent>
             </div>
         </DashboardProvider>
     )
